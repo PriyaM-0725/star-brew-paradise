@@ -1,4 +1,3 @@
-
 import { Product } from "@/context/CartContext";
 
 export const products: Product[] = [
@@ -8,7 +7,7 @@ export const products: Product[] = [
     name: "Caffe Americano",
     description: "Espresso shots topped with hot water create a light layer of crema.",
     price: 3.25,
-    image: "https://images.unsplash.com/photo-1581927061224-5571199963b9?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1580933073521-dc51f51f3135?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
@@ -32,7 +31,7 @@ export const products: Product[] = [
     name: "Dark Roast Coffee",
     description: "Full-bodied dark roast coffee with bold, robust flavors.",
     price: 2.95,
-    image: "https://images.unsplash.com/photo-1621248678988-1881a7c77b95?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1587080413959-06b859fb107d?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
