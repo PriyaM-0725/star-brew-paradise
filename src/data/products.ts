@@ -1,3 +1,4 @@
+
 import { Product } from "@/context/CartContext";
 
 export const products: Product[] = [
@@ -23,7 +24,7 @@ export const products: Product[] = [
     name: "Pike Place® Roast",
     description: "Our signature medium-roasted coffee with notes of cocoa and toasted nuts.",
     price: 2.95,
-    image: "https://images.unsplash.com/photo-1550681560-af9bc1cb339e?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
@@ -31,7 +32,7 @@ export const products: Product[] = [
     name: "Dark Roast Coffee",
     description: "Full-bodied dark roast coffee with bold, robust flavors.",
     price: 2.95,
-    image: "https://images.unsplash.com/photo-1523898052899-241108586cf8?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1621248678988-1881a7c77b95?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {

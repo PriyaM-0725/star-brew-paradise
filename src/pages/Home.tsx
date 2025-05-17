@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/data/products";
@@ -31,7 +32,7 @@ const Home = () => {
           <div className="md:w-1/2 animate-slide-in-right">
             <div className="rounded-xl overflow-hidden shadow-xl">
               <img 
-                src="/placeholder.svg" 
+                src="https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=1000&auto=format&fit=crop"
                 alt="StarBrew Coffee Experience" 
                 className="w-full h-auto"
               />
@@ -117,7 +118,7 @@ const Home = () => {
             <div className="md:w-1/2 animate-slide-in-left">
               <div className="rounded-xl overflow-hidden shadow-lg">
                 <img 
-                  src="/placeholder.svg" 
+                  src="https://images.unsplash.com/photo-1565657647665-e389dcc4e5f2?q=80&w=1000&auto=format&fit=crop" 
                   alt="Mobile Ordering" 
                   className="w-full h-auto"
                 />
