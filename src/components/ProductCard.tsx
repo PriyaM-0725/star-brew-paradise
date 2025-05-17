@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Product, useCart } from "@/context/CartContext";
 import { formatPrice } from "@/utils/format";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -10,15 +12,27 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
+  const [imageLoading, setImageLoading] = useState(true);
 
   return (
     <Card className="menu-card overflow-hidden h-full flex flex-col hover-lift animate-scale-up">
-      <div className="aspect-square w-full overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-        />
+      <div className="relative overflow-hidden">
+        <AspectRatio ratio={1 / 1} className="bg-gray-50">
+          {imageLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+              <div className="w-10 h-10 border-4 border-starbucks-green border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+          <img
+            src={product.image}
+            alt={product.name}
+            className={`w-full h-full object-cover transition-all duration-700 hover:scale-105 ${
+              imageLoading ? "opacity-0" : "opacity-100"
+            }`}
+            onLoad={() => setImageLoading(false)}
+            onError={() => setImageLoading(false)}
+          />
+        </AspectRatio>
       </div>
       <CardContent className="p-4 flex-grow">
         <div className="flex justify-between items-start mb-2">

@@ -1,4 +1,3 @@
-
 import { Product } from "@/context/CartContext";
 
 export const products: Product[] = [
@@ -8,7 +7,7 @@ export const products: Product[] = [
     name: "Caffe Americano",
     description: "Espresso shots topped with hot water create a light layer of crema.",
     price: 3.25,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1581927061224-5571199963b9?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
@@ -16,7 +15,7 @@ export const products: Product[] = [
     name: "Blonde Roast",
     description: "Lightly roasted coffee that's soft, mellow and flavorful.",
     price: 2.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
@@ -24,7 +23,7 @@ export const products: Product[] = [
     name: "Pike Place® Roast",
     description: "Our signature medium-roasted coffee with notes of cocoa and toasted nuts.",
     price: 2.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1550681560-af9bc1cb339e?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
@@ -32,7 +31,7 @@ export const products: Product[] = [
     name: "Dark Roast Coffee",
     description: "Full-bodied dark roast coffee with bold, robust flavors.",
     price: 2.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1523898052899-241108586cf8?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
   {
@@ -40,7 +39,7 @@ export const products: Product[] = [
     name: "Caffe Latte",
     description: "Rich, full-bodied espresso with bittersweet milk and steamed milk.",
     price: 3.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=500&auto=format&fit=crop",
     category: "hot-coffees"
   },
 
@@ -50,7 +49,7 @@ export const products: Product[] = [
     name: "Iced Coffee",
     description: "Freshly brewed and served chilled over ice.",
     price: 3.45,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=500&auto=format&fit=crop",
     category: "cold-coffees"
   },
   {
@@ -58,7 +57,7 @@ export const products: Product[] = [
     name: "Cold Brew",
     description: "Slow-steeped, small-batch and super smooth.",
     price: 3.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1592663527359-cf6642f54cff?q=80&w=500&auto=format&fit=crop",
     category: "cold-coffees"
   },
   {
@@ -66,7 +65,7 @@ export const products: Product[] = [
     name: "Nitro Cold Brew",
     description: "Cold brew coffee infused with nitrogen for a naturally sweet flavor and velvety smooth texture.",
     price: 4.45,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1595434091143-b375ced5fe5c?q=80&w=500&auto=format&fit=crop",
     category: "cold-coffees"
   },
   {
@@ -74,7 +73,7 @@ export const products: Product[] = [
     name: "Vanilla Sweet Cream Cold Brew",
     description: "Cold brew topped with vanilla-flavored sweet cream.",
     price: 4.75,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1581996323441-538096e8f12e?q=80&w=500&auto=format&fit=crop",
     category: "cold-coffees"
   },
   {
@@ -82,7 +81,7 @@ export const products: Product[] = [
     name: "Iced Caramel Macchiato",
     description: "Espresso combined with vanilla-flavored syrup, milk and caramel sauce over ice.",
     price: 4.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1637075823064-38befbe5bca9?q=80&w=500&auto=format&fit=crop",
     category: "cold-coffees"
   },
 
@@ -92,7 +91,7 @@ export const products: Product[] = [
     name: "Butter Croissant",
     description: "Classic butter croissant with a soft, flaky texture.",
     price: 3.25,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=500&auto=format&fit=crop",
     category: "bakery"
   },
   {
@@ -100,7 +99,7 @@ export const products: Product[] = [
     name: "Chocolate Croissant",
     description: "Butter croissant filled with chocolate-hazelnut paste.",
     price: 3.75,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1623334044303-241021148842?q=80&w=500&auto=format&fit=crop",
     category: "bakery"
   },
   {
@@ -108,7 +107,7 @@ export const products: Product[] = [
     name: "Blueberry Muffin",
     description: "Buttery muffin with blueberries, topped with granulated sugar.",
     price: 3.45,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1607958996333-41784c70a7d5?q=80&w=500&auto=format&fit=crop",
     category: "bakery"
   },
   {
@@ -116,7 +115,7 @@ export const products: Product[] = [
     name: "Classic Coffee Cake",
     description: "Buttery, moist coffee cake topped with cinnamon-sugar streusel.",
     price: 3.95,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1534432182912-63863115e106?q=80&w=500&auto=format&fit=crop",
     category: "bakery"
   },
   {
@@ -124,7 +123,7 @@ export const products: Product[] = [
     name: "Banana Nut Bread",
     description: "Banana bread topped with walnuts.",
     price: 3.65,
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1605286978633-2dec93ff88a2?q=80&w=500&auto=format&fit=crop",
     category: "bakery"
   }
 ];
