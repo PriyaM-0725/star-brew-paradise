@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/data/products";
@@ -9,16 +8,16 @@ const Home = () => {
       {/* Hero Section */}
       <section className="bg-starbucks-cream py-12 md:py-24">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-starbucks-green">
+          <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8 animate-slide-in-left">
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 text-starbucks-green">
               It's not just coffee,<br />it's <span className="italic">StarBrew</span>
             </h1>
-            <p className="text-lg mb-6 text-gray-700">
+            <p className="text-lg mb-6 text-gray-700 font-body">
               Discover our handcrafted beverages, delicious food, and unique coffee experience made just for you.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/menu">
-                <Button size="lg" className="bg-starbucks-green hover:bg-starbucks-darkGreen">
+                <Button size="lg" className="bg-starbucks-green hover:bg-starbucks-darkGreen btn-hover-expand">
                   Explore Our Menu
                 </Button>
               </Link>
@@ -29,7 +28,7 @@ const Home = () => {
               </Link>
             </div>
           </div>
-          <div className="md:w-1/2">
+          <div className="md:w-1/2 animate-slide-in-right">
             <div className="rounded-xl overflow-hidden shadow-xl">
               <img 
                 src="/placeholder.svg" 
@@ -44,14 +43,14 @@ const Home = () => {
       {/* Featured Categories Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-starbucks-brown">Discover Our Menu</h2>
+          <h2 className="text-3xl font-display font-bold text-center mb-12 text-starbucks-brown animate-fade-in">Discover Our Menu</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <Link 
                 to={`/menu?category=${category.id}`} 
                 key={category.id}
-                className="group"
+                className="group stagger-item"
               >
                 <div className="bg-gray-100 rounded-lg overflow-hidden shadow-md transition-transform duration-300 group-hover:shadow-lg group-hover:-translate-y-1">
                   <div className="h-48 bg-starbucks-green/20 flex items-center justify-center">
@@ -60,10 +59,10 @@ const Home = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 group-hover:text-starbucks-green transition-colors">
+                    <h3 className="text-xl font-display font-semibold mb-2 group-hover:text-starbucks-green transition-colors">
                       {category.name}
                     </h3>
-                    <p className="text-gray-600">{category.description}</p>
+                    <p className="text-gray-600 font-body">{category.description}</p>
                   </div>
                 </div>
               </Link>
@@ -76,21 +75,21 @@ const Home = () => {
       <section className="py-16 bg-starbucks-green text-white banner-gradient">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="md:w-2/3 mb-8 md:mb-0">
-              <h2 className="text-3xl font-bold mb-4">StarBrew Rewards</h2>
-              <p className="text-lg mb-6 text-white/90">
+            <div className="md:w-2/3 mb-8 md:mb-0 animate-slide-in-bottom">
+              <h2 className="text-3xl font-display font-bold mb-4">StarBrew Rewards</h2>
+              <p className="text-lg mb-6 text-white/90 font-body">
                 Join StarBrew Rewards to earn Stars for free food and drinks, get free refills, pay and order with your phone, and more.
               </p>
               <Link to="/rewards">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-starbucks-green">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-starbucks-green btn-hover-expand">
                   Join Now
                 </Button>
               </Link>
             </div>
             <div className="md:w-1/3 flex justify-center">
-              <div className="w-40 h-40 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+              <div className="w-40 h-40 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center animate-bounce-light">
                 <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center">
-                  <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center text-starbucks-green">
+                  <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center text-starbucks-green animate-spin-slow">
                     <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" />
                     </svg>
@@ -106,16 +105,16 @@ const Home = () => {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row-reverse items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0 md:pl-8">
-              <h2 className="text-3xl font-bold mb-4 text-starbucks-brown">Order Ahead, Skip the Line</h2>
-              <p className="text-lg mb-6 text-gray-700">
+            <div className="md:w-1/2 mb-8 md:mb-0 md:pl-8 animate-slide-in-right">
+              <h2 className="text-3xl font-display font-bold mb-4 text-starbucks-brown">Order Ahead, Skip the Line</h2>
+              <p className="text-lg mb-6 text-gray-700 font-body">
                 Save time by ordering your favorites ahead on our mobile app. Pick up your order at the store without waiting in line.
               </p>
-              <Button size="lg" className="bg-starbucks-green hover:bg-starbucks-darkGreen">
+              <Button size="lg" className="bg-starbucks-green hover:bg-starbucks-darkGreen btn-hover-expand">
                 Download App
               </Button>
             </div>
-            <div className="md:w-1/2">
+            <div className="md:w-1/2 animate-slide-in-left">
               <div className="rounded-xl overflow-hidden shadow-lg">
                 <img 
                   src="/placeholder.svg" 
