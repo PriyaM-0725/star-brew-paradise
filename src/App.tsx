@@ -21,6 +21,23 @@ import Rewards from "@/pages/Rewards";
 import About from "@/pages/About";
 import NotFound from "@/pages/NotFound";
 
+// Footer-related pages
+import AboutCompany from "@/pages/AboutCompany";
+import Careers from "@/pages/Careers";
+import SocialImpact from "@/pages/SocialImpact";
+import Stories from "@/pages/Stories";
+import Contact from "@/pages/Contact";
+import FAQ from "@/pages/FAQ";
+import StoreLocator from "@/pages/StoreLocator";
+import GiftCards from "@/pages/GiftCards";
+import OrderApp from "@/pages/OrderApp";
+import Delivery from "@/pages/Delivery";
+import OrderHistory from "@/pages/OrderHistory";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
+import Accessibility from "@/pages/Accessibility";
+import CookiePreferences from "@/pages/CookiePreferences";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -44,6 +61,31 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/rewards" element={<Rewards />} />
                   <Route path="/about" element={<About />} />
+                  
+                  {/* About Us Section */}
+                  <Route path="/about" element={<AboutCompany />} />
+                  <Route path="/careers" element={<Careers />} />
+                  <Route path="/social-impact" element={<SocialImpact />} />
+                  <Route path="/stories" element={<Stories />} />
+                  
+                  {/* Customer Service Section */}
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/store-locator" element={<StoreLocator />} />
+                  <Route path="/gift-cards" element={<GiftCards />} />
+                  
+                  {/* Orders & Rewards Section */}
+                  <Route path="/rewards" element={<Rewards />} />
+                  <Route path="/order" element={<OrderApp />} />
+                  <Route path="/delivery" element={<Delivery />} />
+                  <Route path="/order-history" element={<OrderHistory />} />
+                  
+                  {/* Legal Pages */}
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/accessibility" element={<Accessibility />} />
+                  <Route path="/cookie-preferences" element={<CookiePreferences />} />
+                  
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
