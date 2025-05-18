@@ -198,11 +198,12 @@ const StoreLocator = () => {
           </div>
           
           <div className="lg:col-span-2">
-            <div className="bg-gray-200 rounded-lg h-[400px] mb-6 flex items-center justify-center">
+            <div className="bg-gray-100 rounded-lg h-[400px] mb-6 flex items-center justify-center">
               <div className="text-center">
-                <MapPin className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                <p className="text-gray-500">Map view would be displayed here</p>
-                <p className="text-sm text-gray-400 mt-1">Interactive map integration required</p>
+                <img src="https://cdn.images.express.co.uk/img/dynamic/25/590x/secondary/google-maps-street-view-california-la-los-angeles-spelling-embarrassing-1820896.jpg?r=1554891355302" 
+                alt="Sample map preview" 
+                className="h-full object-cover rounded-lg" 
+                />
               </div>
             </div>
             
