@@ -118,7 +118,7 @@ const Home = () => {
             <div className="md:w-1/2 animate-slide-in-left">
               <div className="rounded-xl overflow-hidden shadow-lg">
                 <img 
-                  src="https://images.unsplash.com/photo-1607606116242-357a0bd21020?q=80&w=1000&auto=format&fit=crop" 
+                  src="https://images.unsplash.com/photo-1597607875762-a9053712940f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8d29tYW4lMjBtb2JpbGUlMjBjb2ZmZWV8ZW58MHx8MHx8fDA%3D" 
                   alt="Mobile Ordering" 
                   className="w-full h-auto"
                 />
