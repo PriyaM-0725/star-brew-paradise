@@ -21,7 +21,7 @@ const Stories = () => {
       date: "April 23, 2023",
       category: "People",
       excerpt: "With 15 years of experience, Maria has perfected the art of roasting to bring out unique flavor profiles.",
-      image: "https://images.unsplash.com/photo-1559305616-3f9f5a13f211?q=80&w=640&auto=format&fit=crop",
+      image: "https://t3.ftcdn.net/jpg/02/93/45/64/360_F_293456457_C2VqKEn2q1gbmNfsXZfPpQEz03rbNP1Q.jpg",
       slug: "meet-maria-master-roaster"
     },
     {
@@ -29,7 +29,7 @@ const Stories = () => {
       date: "March 10, 2023",
       category: "Sustainability",
       excerpt: "From compostable cups to energy-efficient stores, discover our ongoing sustainability initiatives.",
-      image: "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=640&auto=format&fit=crop",
+      image: "https://www.green.earth/hs-fs/hubfs/10%20easy%20ways%20to%20reduce%20your%20carbon%20footprint.jpg?width=1200&height=698&name=10%20easy%20ways%20to%20reduce%20your%20carbon%20footprint.jpg",
       slug: "reducing-environmental-footprint"
     },
     {
@@ -45,7 +45,7 @@ const Stories = () => {
       date: "May 5, 2023",
       category: "Community",
       excerpt: "StarBrew partners with local artists to showcase their work in our downtown locations.",
-      image: "https://images.unsplash.com/photo-1607410072158-da6e4f9ef548?q=80&w=640&auto=format&fit=crop",
+      image: "https://dht7q8fif4gks.cloudfront.net/2024-04/Westman%20Juried%20Art%20Show%202024%20D.jpg",
       slug: "community-spotlight-artists"
     },
     {
@@ -53,7 +53,7 @@ const Stories = () => {
       date: "April 12, 2023",
       category: "Coffee Education",
       excerpt: "Our coffee experts break down the precise techniques behind pulling the perfect shot of espresso.",
-      image: "https://images.unsplash.com/photo-1572286258217-215b98b0d184?q=80&w=640&auto=format&fit=crop",
+      image: "https://coffeeme.in/wp-content/uploads/2023/03/The-Science-Behind-a-Perfect-Espresso-Shot.jpg",
       slug: "science-of-perfect-espresso"
     }
   ];
