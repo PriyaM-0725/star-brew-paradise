@@ -368,8 +368,12 @@ const StoreDetail = () => {
             <Card className="mb-6">
               <CardContent className="p-6">
                 <h3 className="font-semibold text-lg mb-4">Location</h3>
-                <div className="bg-gray-200 h-[200px] rounded-md flex items-center justify-center mb-4">
-                  <MapPin className="h-8 w-8 text-gray-400" />
+                <div className="h-[200px] rounded-md flex items-center justify-center mb-4">
+                <img 
+      src="https://img.sfist.com/2023/10/starbucks-cloisjng-map.jpg" 
+      alt="Sample map preview" 
+      className="h-full object-cover rounded-lg" 
+    />
                 </div>
                 <Button className="w-full">Get Directions</Button>
               </CardContent>
