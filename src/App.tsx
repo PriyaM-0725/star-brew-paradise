@@ -38,6 +38,11 @@ import Terms from "@/pages/Terms";
 import Accessibility from "@/pages/Accessibility";
 import CookiePreferences from "@/pages/CookiePreferences";
 
+// New feature pages 
+import OrderDetail from "@/pages/OrderDetail";
+import StoreDetail from "@/pages/StoreDetail";
+import ArticleDetail from "@/pages/ArticleDetail";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -67,11 +72,13 @@ const App = () => (
                   <Route path="/careers" element={<Careers />} />
                   <Route path="/social-impact" element={<SocialImpact />} />
                   <Route path="/stories" element={<Stories />} />
+                  <Route path="/article/:slug" element={<ArticleDetail />} />
                   
                   {/* Customer Service Section */}
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/store-locator" element={<StoreLocator />} />
+                  <Route path="/store/:storeId" element={<StoreDetail />} />
                   <Route path="/gift-cards" element={<GiftCards />} />
                   
                   {/* Orders & Rewards Section */}
@@ -79,6 +86,7 @@ const App = () => (
                   <Route path="/order" element={<OrderApp />} />
                   <Route path="/delivery" element={<Delivery />} />
                   <Route path="/order-history" element={<OrderHistory />} />
+                  <Route path="/order-detail/:orderId" element={<OrderDetail />} />
                   
                   {/* Legal Pages */}
                   <Route path="/privacy" element={<Privacy />} />

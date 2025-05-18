@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +9,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const StoreLocator = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    wifi: false,
+    mobileOrder: false,
+    driveThru: false,
+    outdoorSeating: false
+  });
   
   // Sample store data
   const stores = [
@@ -84,6 +91,38 @@ const StoreLocator = () => {
     }
   ];
   
+  const handleFilterChange = (id: string, checked: boolean) => {
+    setFilters(prev => ({
+      ...prev,
+      [id]: checked
+    }));
+  };
+  
+  // Filter stores based on search query and filters
+  const filteredStores = stores.filter(store => {
+    // Search filter
+    const matchesSearch = searchQuery 
+      ? store.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        store.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        store.zipCode.includes(searchQuery)
+      : true;
+    
+    // Feature filters
+    const matchesWifi = filters.wifi ? store.features.includes("Wifi") : true;
+    const matchesMobileOrder = filters.mobileOrder ? store.features.includes("Mobile Order") : true;
+    const matchesDriveThru = filters.driveThru ? store.features.includes("Drive-Thru") : true;
+    const matchesOutdoorSeating = filters.outdoorSeating ? store.features.includes("Outdoor Seating") : true;
+    
+    return matchesSearch && matchesWifi && matchesMobileOrder && matchesDriveThru && matchesOutdoorSeating;
+  });
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Search logic is already handled by the filteredStores variable
+    console.log("Searching for:", searchQuery);
+  };
+  
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-6xl mx-auto">
@@ -98,27 +137,33 @@ const StoreLocator = () => {
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Search Stores</h2>
                 <div className="space-y-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                    <Input 
-                      type="text" 
-                      placeholder="City, state, or zip code" 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Button className="w-full">Search</Button>
-                  </div>
+                  <form onSubmit={handleSearch}>
+                    <div className="relative mb-4">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                      <Input 
+                        type="text" 
+                        placeholder="City, state, or zip code" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Button type="submit" className="w-full">Search</Button>
+                    </div>
+                  </form>
                   
                   <div className="pt-4 border-t">
                     <h3 className="font-medium mb-3">Filter by Features</h3>
                     <div className="space-y-3">
                       {featureOptions.map(option => (
                         <div key={option.id} className="flex items-center space-x-2">
-                          <Checkbox id={option.id} />
+                          <Checkbox 
+                            id={option.id} 
+                            checked={filters[option.id as keyof typeof filters]}
+                            onCheckedChange={(checked) => handleFilterChange(option.id, checked as boolean)}
+                          />
                           <label
                             htmlFor={option.id}
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2"
@@ -142,6 +187,13 @@ const StoreLocator = () => {
               <p className="text-sm">
                 Use the StarBrew app to find stores along your route or instantly order ahead at your favorite location.
               </p>
+              <div className="mt-4">
+                <Link to="/order">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Get the App
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
           
@@ -154,58 +206,85 @@ const StoreLocator = () => {
               </div>
             </div>
             
-            <h2 className="text-xl font-semibold mb-4">Nearby Stores</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              {filteredStores.length > 0 
+                ? `${filteredStores.length} Store${filteredStores.length !== 1 ? 's' : ''} Found`
+                : "No Stores Found"
+              }
+            </h2>
             
             <div className="space-y-4">
-              {stores.map(store => (
-                <Card key={store.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                  <CardContent className="p-0">
-                    <div className="grid grid-cols-1 md:grid-cols-4">
-                      <div className="md:col-span-3 p-6">
-                        <h3 className="text-lg font-semibold">{store.name}</h3>
-                        <p className="text-sm text-gray-500">{store.distance} away</p>
-                        
-                        <div className="mt-4 space-y-2">
-                          <div className="flex items-start">
-                            <MapPin className="h-4 w-4 mr-2 mt-1 text-starbucks-green shrink-0" />
-                            <span className="text-sm">
-                              {store.address}, {store.city}, {store.state} {store.zipCode}
-                            </span>
+              {filteredStores.length > 0 ? (
+                filteredStores.map(store => (
+                  <Card key={store.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                    <CardContent className="p-0">
+                      <div className="grid grid-cols-1 md:grid-cols-4">
+                        <div className="md:col-span-3 p-6">
+                          <Link to={`/store/${store.id}`} className="hover:text-starbucks-green">
+                            <h3 className="text-lg font-semibold">{store.name}</h3>
+                          </Link>
+                          <p className="text-sm text-gray-500">{store.distance} away</p>
+                          
+                          <div className="mt-4 space-y-2">
+                            <div className="flex items-start">
+                              <MapPin className="h-4 w-4 mr-2 mt-1 text-starbucks-green shrink-0" />
+                              <span className="text-sm">
+                                {store.address}, {store.city}, {store.state} {store.zipCode}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <Phone className="h-4 w-4 mr-2 text-starbucks-green shrink-0" />
+                              <span className="text-sm">{store.phone}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <Clock className="h-4 w-4 mr-2 text-starbucks-green shrink-0" />
+                              <span className="text-sm">{store.hours}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 mr-2 text-starbucks-green shrink-0" />
-                            <span className="text-sm">{store.phone}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="h-4 w-4 mr-2 text-starbucks-green shrink-0" />
-                            <span className="text-sm">{store.hours}</span>
+                          
+                          <div className="flex flex-wrap gap-2 mt-4">
+                            {store.features.map((feature, index) => (
+                              <span 
+                                key={index}
+                                className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-gray-100 text-gray-800"
+                              >
+                                {feature}
+                              </span>
+                            ))}
                           </div>
                         </div>
-                        
-                        <div className="flex flex-wrap gap-2 mt-4">
-                          {store.features.map((feature, index) => (
-                            <span 
-                              key={index}
-                              className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-gray-100 text-gray-800"
-                            >
-                              {feature}
-                            </span>
-                          ))}
+                        <div className="md:col-span-1 flex flex-col justify-between border-t md:border-t-0 md:border-l p-4">
+                          <a 
+                            href={`https://maps.google.com/?q=${store.address},${store.city},${store.state}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Button className="w-full mb-2">Directions</Button>
+                          </a>
+                          <Link to={`/store/${store.id}`}>
+                            <Button variant="outline" className="w-full">View Details</Button>
+                          </Link>
                         </div>
                       </div>
-                      <div className="md:col-span-1 flex flex-col justify-between border-t md:border-t-0 md:border-l p-4">
-                        <Button className="w-full mb-2">Directions</Button>
-                        <Button variant="outline" className="w-full">Order Now</Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-10 bg-gray-50 rounded-lg">
+                  <MapPin className="mx-auto h-10 w-10 text-gray-400 mb-2" />
+                  <h3 className="text-lg font-medium mb-2">No Stores Found</h3>
+                  <p className="text-gray-500 mb-4">
+                    Try adjusting your search criteria or filters.
+                  </p>
+                </div>
+              )}
             </div>
             
-            <div className="mt-6 text-center">
-              <Button variant="outline">Load More Stores</Button>
-            </div>
+            {filteredStores.length > 0 && (
+              <div className="mt-6 text-center">
+                <Button variant="outline">Load More Stores</Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

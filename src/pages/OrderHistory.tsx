@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,9 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Search, ChevronRight, Star } from "lucide-react";
 import { formatCurrency } from "@/utils/format";
+import { useToast } from "@/components/ui/use-toast";
 
 const OrderHistory = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
+  const navigate = useNavigate();
   
   // Sample order history data
   const orders = [
@@ -116,6 +120,31 @@ const OrderHistory = () => {
     }
   };
   
+  const handleReorder = (orderId: string) => {
+    toast({
+      title: "Items Added to Cart",
+      description: "All items from this order have been added to your cart."
+    });
+    // In a real app, this would add the items to the cart
+  };
+  
+  const handleReview = (orderId: string) => {
+    navigate(`/order-detail/${orderId}`);
+  };
+  
+  const handleOrderClick = (orderId: string) => {
+    navigate(`/order-detail/${orderId}`);
+  };
+  
+  // Filter orders based on search query
+  const filteredOrders = searchQuery
+    ? orders.filter(order => 
+        order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.store.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.items.some(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : orders;
+  
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-6xl mx-auto">
@@ -145,8 +174,8 @@ const OrderHistory = () => {
           
           <TabsContent value="all" className="mt-6">
             <div className="space-y-6">
-              {orders.map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
+              {filteredOrders.map((order) => (
+                <Card key={order.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleOrderClick(order.id)}>
                   <CardContent className="p-0">
                     <div className="p-4 border-b flex justify-between items-center">
                       <div>
@@ -182,183 +211,298 @@ const OrderHistory = () => {
                         <div className="font-medium">Total: {formatCurrency(order.total)}</div>
                         <div className="flex gap-2">
                           {!order.reviewed && (
-                            <Button size="sm" variant="outline" className="flex items-center gap-1">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="flex items-center gap-1"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleReview(order.id);
+                              }}
+                            >
                               <Star className="h-4 w-4" />
                               Review
                             </Button>
                           )}
-                          <Button size="sm">Reorder</Button>
+                          <Button 
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleReorder(order.id);
+                            }}
+                          >
+                            Reorder
+                          </Button>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
+              
+              {filteredOrders.length === 0 && (
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <Search className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Orders Found</h3>
+                  <p className="text-gray-500">
+                    {searchQuery 
+                      ? "No orders match your search criteria. Try different keywords."
+                      : "You don't have any orders yet. Visit our menu to place an order."}
+                  </p>
+                </div>
+              )}
             </div>
           </TabsContent>
           
           <TabsContent value="mobile" className="mt-6">
             <div className="space-y-6">
-              {orders.filter(order => order.orderType === "Mobile Order").map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  {/* Same card content as "all" tab */}
-                  <CardContent className="p-0">
-                    <div className="p-4 border-b flex justify-between items-center">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{order.date} at {order.time}</h3>
-                          <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1">{order.store} • {order.id}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          {getOrderTypeIcon(order.orderType)}
-                          {order.orderType}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-gray-400" />
-                      </div>
-                    </div>
-                    
-                    <div className="p-4">
-                      <div className="space-y-2 mb-4">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between">
-                            <div className="flex">
-                              <span className="font-medium mr-2">{item.quantity}x</span>
-                              <span>{item.name}</span>
+              {filteredOrders.filter(order => order.orderType === "Mobile Order").length > 0 ? (
+                filteredOrders
+                  .filter(order => order.orderType === "Mobile Order")
+                  .map((order) => (
+                    <Card key={order.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleOrderClick(order.id)}>
+                      <CardContent className="p-0">
+                        {/* Same card content as "all" tab */}
+                        <div className="p-4 border-b flex justify-between items-center">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{order.date} at {order.time}</h3>
+                              <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                             </div>
-                            <span>{formatCurrency(item.price * item.quantity)}</span>
+                            <p className="text-sm text-gray-500 mt-1">{order.store} • {order.id}</p>
                           </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-3 border-t">
-                        <div className="font-medium">Total: {formatCurrency(order.total)}</div>
-                        <div className="flex gap-2">
-                          {!order.reviewed && (
-                            <Button size="sm" variant="outline" className="flex items-center gap-1">
-                              <Star className="h-4 w-4" />
-                              Review
-                            </Button>
-                          )}
-                          <Button size="sm">Reorder</Button>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              {getOrderTypeIcon(order.orderType)}
+                              {order.orderType}
+                            </Badge>
+                            <ChevronRight className="h-5 w-5 text-gray-400" />
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        
+                        <div className="p-4">
+                          <div className="space-y-2 mb-4">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between">
+                                <div className="flex">
+                                  <span className="font-medium mr-2">{item.quantity}x</span>
+                                  <span>{item.name}</span>
+                                </div>
+                                <span>{formatCurrency(item.price * item.quantity)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="flex justify-between items-center pt-3 border-t">
+                            <div className="font-medium">Total: {formatCurrency(order.total)}</div>
+                            <div className="flex gap-2">
+                              {!order.reviewed && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="flex items-center gap-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReview(order.id);
+                                  }}
+                                >
+                                  <Star className="h-4 w-4" />
+                                  Review
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReorder(order.id);
+                                }}
+                              >
+                                Reorder
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+              ) : (
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <svg className="h-10 w-10 text-gray-400 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12" y2="18"></line>
+                  </svg>
+                  <h3 className="text-lg font-medium mb-2">No Mobile Orders Found</h3>
+                  <p className="text-gray-500">You haven't placed any mobile orders yet.</p>
+                </div>
+              )}
             </div>
           </TabsContent>
           
           <TabsContent value="in-store" className="mt-6">
             <div className="space-y-6">
-              {orders.filter(order => order.orderType === "In-Store").map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  {/* Same card content as "all" tab */}
-                  <CardContent className="p-0">
-                    <div className="p-4 border-b flex justify-between items-center">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{order.date} at {order.time}</h3>
-                          <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1">{order.store} • {order.id}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          {getOrderTypeIcon(order.orderType)}
-                          {order.orderType}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-gray-400" />
-                      </div>
-                    </div>
-                    
-                    <div className="p-4">
-                      <div className="space-y-2 mb-4">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between">
-                            <div className="flex">
-                              <span className="font-medium mr-2">{item.quantity}x</span>
-                              <span>{item.name}</span>
+              {filteredOrders.filter(order => order.orderType === "In-Store").length > 0 ? (
+                filteredOrders
+                  .filter(order => order.orderType === "In-Store")
+                  .map((order) => (
+                    <Card key={order.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleOrderClick(order.id)}>
+                      <CardContent className="p-0">
+                        {/* Same card content as "all" tab */}
+                        <div className="p-4 border-b flex justify-between items-center">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{order.date} at {order.time}</h3>
+                              <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                             </div>
-                            <span>{formatCurrency(item.price * item.quantity)}</span>
+                            <p className="text-sm text-gray-500 mt-1">{order.store} • {order.id}</p>
                           </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-3 border-t">
-                        <div className="font-medium">Total: {formatCurrency(order.total)}</div>
-                        <div className="flex gap-2">
-                          {!order.reviewed && (
-                            <Button size="sm" variant="outline" className="flex items-center gap-1">
-                              <Star className="h-4 w-4" />
-                              Review
-                            </Button>
-                          )}
-                          <Button size="sm">Reorder</Button>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              {getOrderTypeIcon(order.orderType)}
+                              {order.orderType}
+                            </Badge>
+                            <ChevronRight className="h-5 w-5 text-gray-400" />
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        
+                        <div className="p-4">
+                          <div className="space-y-2 mb-4">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between">
+                                <div className="flex">
+                                  <span className="font-medium mr-2">{item.quantity}x</span>
+                                  <span>{item.name}</span>
+                                </div>
+                                <span>{formatCurrency(item.price * item.quantity)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="flex justify-between items-center pt-3 border-t">
+                            <div className="font-medium">Total: {formatCurrency(order.total)}</div>
+                            <div className="flex gap-2">
+                              {!order.reviewed && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="flex items-center gap-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReview(order.id);
+                                  }}
+                                >
+                                  <Star className="h-4 w-4" />
+                                  Review
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReorder(order.id);
+                                }}
+                              >
+                                Reorder
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+              ) : (
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <svg className="h-10 w-10 text-gray-400 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                  <h3 className="text-lg font-medium mb-2">No In-Store Orders Found</h3>
+                  <p className="text-gray-500">You haven't placed any in-store orders yet.</p>
+                </div>
+              )}
             </div>
           </TabsContent>
           
           <TabsContent value="delivery" className="mt-6">
             <div className="space-y-6">
-              {orders.filter(order => order.orderType === "Delivery").map((order) => (
-                <Card key={order.id} className="hover:shadow-md transition-shadow">
-                  {/* Same card content as "all" tab */}
-                  <CardContent className="p-0">
-                    <div className="p-4 border-b flex justify-between items-center">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{order.date} at {order.time}</h3>
-                          <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                        </div>
-                        <p className="text-sm text-gray-500 mt-1">{order.store} • {order.id}</p>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          {getOrderTypeIcon(order.orderType)}
-                          {order.orderType}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-gray-400" />
-                      </div>
-                    </div>
-                    
-                    <div className="p-4">
-                      <div className="space-y-2 mb-4">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex justify-between">
-                            <div className="flex">
-                              <span className="font-medium mr-2">{item.quantity}x</span>
-                              <span>{item.name}</span>
+              {filteredOrders.filter(order => order.orderType === "Delivery").length > 0 ? (
+                filteredOrders
+                  .filter(order => order.orderType === "Delivery")
+                  .map((order) => (
+                    <Card key={order.id} className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => handleOrderClick(order.id)}>
+                      <CardContent className="p-0">
+                        {/* Same card content as "all" tab */}
+                        <div className="p-4 border-b flex justify-between items-center">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{order.date} at {order.time}</h3>
+                              <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                             </div>
-                            <span>{formatCurrency(item.price * item.quantity)}</span>
+                            <p className="text-sm text-gray-500 mt-1">{order.store} • {order.id}</p>
                           </div>
-                        ))}
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-3 border-t">
-                        <div className="font-medium">Total: {formatCurrency(order.total)}</div>
-                        <div className="flex gap-2">
-                          {!order.reviewed && (
-                            <Button size="sm" variant="outline" className="flex items-center gap-1">
-                              <Star className="h-4 w-4" />
-                              Review
-                            </Button>
-                          )}
-                          <Button size="sm">Reorder</Button>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              {getOrderTypeIcon(order.orderType)}
+                              {order.orderType}
+                            </Badge>
+                            <ChevronRight className="h-5 w-5 text-gray-400" />
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        
+                        <div className="p-4">
+                          <div className="space-y-2 mb-4">
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between">
+                                <div className="flex">
+                                  <span className="font-medium mr-2">{item.quantity}x</span>
+                                  <span>{item.name}</span>
+                                </div>
+                                <span>{formatCurrency(item.price * item.quantity)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div className="flex justify-between items-center pt-3 border-t">
+                            <div className="font-medium">Total: {formatCurrency(order.total)}</div>
+                            <div className="flex gap-2">
+                              {!order.reviewed && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="flex items-center gap-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleReview(order.id);
+                                  }}
+                                >
+                                  <Star className="h-4 w-4" />
+                                  Review
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReorder(order.id);
+                                }}
+                              >
+                                Reorder
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+              ) : (
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <svg className="h-10 w-10 text-gray-400 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 8c0-1-1-2-2-2H5c-1 0-2 1-2 2"></path>
+                    <rect x="1" y="10" width="22" height="10" rx="1"></rect>
+                  </svg>
+                  <h3 className="text-lg font-medium mb-2">No Delivery Orders Found</h3>
+                  <p className="text-gray-500">You haven't placed any delivery orders yet.</p>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
