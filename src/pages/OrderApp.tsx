@@ -134,7 +134,7 @@ const OrderApp = () => {
             <div className="relative border-8 border-gray-800 rounded-[3rem] p-2 bg-gray-800 shadow-xl max-w-[300px] mx-auto">
               <div className="rounded-[2.5rem] overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1550399504-8953e1a6ac87?w=600&auto=format&fit=crop&q=80"
+                  src="https://media.istockphoto.com/id/499776696/photo/mobile-internet.jpg?s=612x612&w=0&k=20&c=AcKW0R9-s7m9bfoDFakejzbRLWHtyPZ_X0pj-Dynxw4="
                   alt="StarBrew mobile app"
                   className="w-full object-cover"
                 />
