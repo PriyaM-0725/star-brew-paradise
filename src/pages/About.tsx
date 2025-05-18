@@ -24,7 +24,7 @@ const About = () => {
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
               <img 
-                src="/placeholder.svg" 
+                src="https://www.goodnet.org/photos/281x197/41667_hd.jpg" 
                 alt="Coffee beans being roasted" 
                 className="rounded-lg shadow-lg"
               />
@@ -86,7 +86,7 @@ const About = () => {
                 number={1}
                 title="Sourcing"
                 description="It starts with the beans. We travel the world in search of the finest coffee beans and spend countless hours roasting and blending to create the perfect cup."
-                imgSrc="/placeholder.svg"
+                imgSrc="https://img.freepik.com/premium-photo/roasted-coffee-beans-hd-8k-wallpaper-stock-photographic-image_890746-34276.jpg"
                 alt="Coffee farm"
               />
               
@@ -94,7 +94,7 @@ const About = () => {
                 number={2}
                 title="Roasting"
                 description="Our coffee masters bring out the balance and rich flavor of our beans through the signature StarBrew Roast™ process."
-                imgSrc="/placeholder.svg"
+                imgSrc="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ21J6_NFEW0LcI8fdXMftQCyRb_YOdBWjJEg&s"
                 alt="Coffee roasting process"
                 reverse
               />
@@ -103,7 +103,7 @@ const About = () => {
                 number={3}
                 title="Brewing"
                 description="Our partners are trained in the art of brewing to ensure that every cup of coffee we serve is perfect, from the first sip to the last."
-                imgSrc="/placeholder.svg"
+                imgSrc="https://media.istockphoto.com/id/923370822/photo/espresso-machine.jpg?s=612x612&w=0&k=20&c=2UomaIgsloq131KlAa3M4mYWLa3RyCeEN3AkCOGpPjM="
                 alt="Barista brewing coffee"
               />
             </div>
@@ -146,7 +146,7 @@ const About = () => {
           <div className="flex flex-col md:flex-row-reverse items-center">
             <div className="md:w-1/2 mb-8 md:mb-0 md:pl-8">
               <img 
-                src="/placeholder.svg" 
+                src="https://media.istockphoto.com/id/1062881010/photo/group-portrait-of-friendly-coffee-shop-workers-behind-the-counter.jpg?s=170667a&w=0&k=20&c=kxixX1tiFk6F_jBlOEuH9yamt2vZcQLHGQW_9WuFEm8=" 
                 alt="StarBrew team members" 
                 className="rounded-lg shadow-lg"
               />
