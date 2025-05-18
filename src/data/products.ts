@@ -7,7 +7,7 @@ export const products: Product[] = [
     name: "Caffe Americano",
     description: "Espresso shots topped with hot water create a light layer of crema.",
     price: 3.25,
-    image: "https://images.unsplash.com/photo-1580933073521-dc51f51f3135?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1587985782608-20062892559d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "hot-coffees"
   },
   {
@@ -73,7 +73,7 @@ export const products: Product[] = [
     name: "Vanilla Sweet Cream Cold Brew",
     description: "Cold brew topped with vanilla-flavored sweet cream.",
     price: 4.75,
-    image: "https://images.unsplash.com/photo-1581996323441-538096e8f12e?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1570470752323-008a24a061b8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "cold-coffees"
   },
   {
@@ -81,7 +81,7 @@ export const products: Product[] = [
     name: "Iced Caramel Macchiato",
     description: "Espresso combined with vanilla-flavored syrup, milk and caramel sauce over ice.",
     price: 4.95,
-    image: "https://images.unsplash.com/photo-1637075823064-38befbe5bca9?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1662047102608-a6f2e492411f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FyYW1lbCUyMG1hY2NoaWF0b3xlbnwwfHwwfHx8MA%3D%3D",
     category: "cold-coffees"
   },
 
@@ -107,7 +107,7 @@ export const products: Product[] = [
     name: "Blueberry Muffin",
     description: "Buttery muffin with blueberries, topped with granulated sugar.",
     price: 3.45,
-    image: "https://images.unsplash.com/photo-1607958996333-41784c70a7d5?q=80&w=500&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1637087788517-c63086ec5b7e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     category: "bakery"
   },
   {
