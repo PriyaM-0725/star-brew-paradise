@@ -22,10 +22,10 @@ const GiftCards = () => {
   const [message, setMessage] = useState("");
   
   const cardDesigns = [
-    { id: "classic", name: "Classic Green", image: "https://images.unsplash.com/photo-1607262807149-dea7d6b59e59?w=600&auto=format&fit=crop&q=80" },
-    { id: "birthday", name: "Birthday", image: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80" },
-    { id: "thankyou", name: "Thank You", image: "https://images.unsplash.com/photo-1558586538-e44c7f514e22?w=600&auto=format&fit=crop&q=80" },
-    { id: "holiday", name: "Holiday", image: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&auto=format&fit=crop&q=80" }
+    { id: "classic", name: "Classic Green", image: "https://t4.ftcdn.net/jpg/14/30/14/67/360_F_1430146760_H8vb7nfrV62UZesTWUXxoBoVPt2dY2iu.jpg" },
+    { id: "birthday", name: "Birthday", image: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/happy-birthday-design-with-balloon-template-41099c530dc9192cf72d3c30811aaa75_screen.jpg?ts=1634547574" },
+    { id: "thankyou", name: "Thank You", image: "https://ecardsystems.com/wp-content/uploads/2019/06/GCH756_Thank_You_Gift_Card_Holder.jpg" },
+    { id: "holiday", name: "Holiday", image: "https://m.media-amazon.com/images/I/81oChyQ4BgL._AC_UF894,1000_QL80_.jpg" }
   ];
   
   const predefinedAmounts = [15, 25, 50, 100];
