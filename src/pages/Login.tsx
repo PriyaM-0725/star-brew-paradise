@@ -31,10 +31,11 @@ const Login = () => {
 
     try {
       await login(formData.email, formData.password);
+      toast.success("Signed in successfully!");
       navigate(from);
     } catch (error) {
       console.error(error);
-      // Error toast is handled in the AuthContext
+      toast.error("Failed to sign in. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +123,7 @@ const Login = () => {
               </Button>
 
               <div className="mt-4 text-center text-sm">
-                <span className="text-gray-600">Connect with Supabase for full functionality</span>
+                <span className="text-gray-600">For demo, use any email and password</span>
               </div>
             </CardFooter>
           </form>

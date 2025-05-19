@@ -1,20 +1,15 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Gift, Mail, CreditCard } from "lucide-react";
 import { formatPrice } from "@/utils/format";
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  GiftCardDesign, 
-  getGiftCardDesigns,
-  purchaseGiftCard,
-  checkGiftCardBalance
-} from "@/services/gift-cards";
 
 const GiftCards = () => {
   const { toast } = useToast();
@@ -25,39 +20,17 @@ const GiftCards = () => {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [senderName, setSenderName] = useState("");
   const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [cardDesigns, setCardDesigns] = useState<GiftCardDesign[]>([
-    { id: "classic", name: "Classic Green", image: "https://t4.ftcdn.net/jpg/14/30/14/67/360_F_1430146760_H8vb7nfrV62UZesTWUXxoBoVPt2dY2iu.jpg", previewImage: "" },
-    { id: "birthday", name: "Birthday", image: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/happy-birthday-design-with-balloon-template-41099c530dc9192cf72d3c30811aaa75_screen.jpg?ts=1634547574", previewImage: "" },
-    { id: "thankyou", name: "Thank You", image: "https://ecardsystems.com/wp-content/uploads/2019/06/GCH756_Thank_You_Gift_Card_Holder.jpg", previewImage: "" },
-    { id: "holiday", name: "Holiday", image: "https://m.media-amazon.com/images/I/81oChyQ4BgL._AC_UF894,1000_QL80_.jpg", previewImage: "" }
-  ]);
   
-  // For balance check form
-  const [cardNumber, setCardNumber] = useState("");
-  const [securityCode, setSecurityCode] = useState("");
-  const [isCheckingBalance, setIsCheckingBalance] = useState(false);
+  const cardDesigns = [
+    { id: "classic", name: "Classic Green", image: "https://t4.ftcdn.net/jpg/14/30/14/67/360_F_1430146760_H8vb7nfrV62UZesTWUXxoBoVPt2dY2iu.jpg" },
+    { id: "birthday", name: "Birthday", image: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/happy-birthday-design-with-balloon-template-41099c530dc9192cf72d3c30811aaa75_screen.jpg?ts=1634547574" },
+    { id: "thankyou", name: "Thank You", image: "https://ecardsystems.com/wp-content/uploads/2019/06/GCH756_Thank_You_Gift_Card_Holder.jpg" },
+    { id: "holiday", name: "Holiday", image: "https://m.media-amazon.com/images/I/81oChyQ4BgL._AC_UF894,1000_QL80_.jpg" }
+  ];
   
   const predefinedAmounts = [15, 25, 50, 100];
   
-  useEffect(() => {
-    const fetchDesigns = async () => {
-      try {
-        const designs = await getGiftCardDesigns();
-        if (designs.length > 0) {
-          setCardDesigns(designs);
-          setSelectedCard(designs[0].id);
-        }
-      } catch (error) {
-        console.error("Error fetching gift card designs:", error);
-      }
-    };
-    
-    // Uncomment this when API is ready
-    // fetchDesigns();
-  }, []);
-  
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!recipientName || !recipientEmail || !senderName) {
@@ -69,70 +42,21 @@ const GiftCards = () => {
       return;
     }
     
-    setIsLoading(true);
+    toast({
+      title: "Gift card purchased!",
+      description: `Your ${formatPrice(amount)} gift card will be sent to ${recipientName}.`,
+    });
     
-    try {
-      const result = await purchaseGiftCard({
-        design: selectedCard,
-        amount,
-        recipientName,
-        recipientEmail,
-        senderName,
-        message
-      });
-      
-      toast({
-        title: "Gift card purchased!",
-        description: `Your ${formatPrice(amount)} gift card will be sent to ${recipientName}.`,
-      });
-      
-      // Reset form
-      setRecipientName("");
-      setRecipientEmail("");
-      setSenderName("");
-      setMessage("");
-    } catch (error) {
-      console.error("Error purchasing gift card:", error);
-      toast({
-        title: "Purchase failed",
-        description: "There was a problem processing your gift card. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const handleCheckBalance = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!cardNumber || !securityCode) {
-      toast({
-        title: "Missing information",
-        description: "Please enter both card number and security code.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    setIsCheckingBalance(true);
-    
-    try {
-      const result = await checkGiftCardBalance(cardNumber, securityCode);
-      toast({
-        title: "Card Balance",
-        description: `Your card balance is ${formatPrice(result.balance)}`,
-      });
-    } catch (error) {
-      console.error("Error checking gift card balance:", error);
-      toast({
-        title: "Balance check failed",
-        description: "We couldn't find that gift card. Please check the number and security code.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsCheckingBalance(false);
-    }
+    // In a real app, this would submit to an API
+    console.log({
+      cardDesign: selectedCard,
+      amount,
+      deliveryMethod,
+      recipientName,
+      recipientEmail,
+      senderName,
+      message
+    });
   };
   
   return (
@@ -250,7 +174,6 @@ const GiftCards = () => {
                               value={recipientName}
                               onChange={(e) => setRecipientName(e.target.value)}
                               required
-                              disabled={isLoading}
                             />
                           </div>
                           
@@ -262,7 +185,6 @@ const GiftCards = () => {
                               value={recipientEmail}
                               onChange={(e) => setRecipientEmail(e.target.value)}
                               required
-                              disabled={isLoading}
                             />
                           </div>
                         </div>
@@ -275,7 +197,6 @@ const GiftCards = () => {
                               value={senderName}
                               onChange={(e) => setSenderName(e.target.value)}
                               required
-                              disabled={isLoading}
                             />
                           </div>
                           
@@ -285,7 +206,6 @@ const GiftCards = () => {
                               id="message" 
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
-                              disabled={isLoading}
                             />
                           </div>
                         </div>
@@ -303,14 +223,9 @@ const GiftCards = () => {
                         <p className="text-2xl font-bold">{formatPrice(amount)}</p>
                       </div>
                       
-                      <Button 
-                        type="submit" 
-                        className="w-full md:w-auto" 
-                        size="lg"
-                        disabled={isLoading}
-                      >
+                      <Button type="submit" className="w-full md:w-auto" size="lg">
                         <CreditCard className="mr-2 h-5 w-5" />
-                        {isLoading ? "Processing..." : "Purchase Gift Card"}
+                        Purchase Gift Card
                       </Button>
                     </div>
                   </div>
@@ -325,40 +240,25 @@ const GiftCards = () => {
                 <div className="max-w-md mx-auto">
                   <h2 className="text-xl font-semibold mb-4">Check Gift Card Balance</h2>
                   
-                  <form onSubmit={handleCheckBalance}>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    toast({
+                      title: "Card Balance",
+                      description: "Your card balance is $37.50",
+                    });
+                  }}>
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="card-number">Gift Card Number</Label>
-                        <Input 
-                          id="card-number" 
-                          placeholder="Enter 16-digit card number"
-                          value={cardNumber}
-                          onChange={(e) => setCardNumber(e.target.value)}
-                          disabled={isCheckingBalance}
-                          required
-                        />
+                        <Input id="card-number" placeholder="Enter 16-digit card number" />
                       </div>
                       
                       <div>
                         <Label htmlFor="security-code">Security Code</Label>
-                        <Input 
-                          id="security-code" 
-                          type="password" 
-                          placeholder="Enter 8-digit security code"
-                          value={securityCode}
-                          onChange={(e) => setSecurityCode(e.target.value)}
-                          disabled={isCheckingBalance}
-                          required
-                        />
+                        <Input id="security-code" type="password" placeholder="Enter 8-digit security code" />
                       </div>
                       
-                      <Button 
-                        type="submit" 
-                        className="w-full"
-                        disabled={isCheckingBalance}
-                      >
-                        {isCheckingBalance ? "Checking..." : "Check Balance"}
-                      </Button>
+                      <Button type="submit" className="w-full">Check Balance</Button>
                     </div>
                   </form>
                 </div>
