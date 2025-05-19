@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, QrCode, Download, Coffee, Gift, Clock, Bell, MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { sendAppDownloadLink } from "@/services/app";
 
 const OrderApp = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleSendLink = (e: React.FormEvent) => {
+  const handleSendLink = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email && !phoneNumber) {
@@ -22,15 +24,28 @@ const OrderApp = () => {
       return;
     }
     
-    toast({
-      title: "Download link sent!",
-      description: email 
-        ? `We've sent a download link to ${email}` 
-        : `We've sent a text message to ${phoneNumber}`,
-    });
+    setIsLoading(true);
     
-    setEmail("");
-    setPhoneNumber("");
+    try {
+      const response = await sendAppDownloadLink({
+        email: email || undefined,
+        phoneNumber: phoneNumber || undefined
+      });
+      
+      toast({
+        title: "Download link sent!",
+        description: response.message || (email 
+          ? `We've sent a download link to ${email}` 
+          : `We've sent a text message to ${phoneNumber}`),
+      });
+      
+      setEmail("");
+      setPhoneNumber("");
+    } catch (error) {
+      console.error("Error sending download link:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const appFeatures = [
@@ -74,11 +89,11 @@ const OrderApp = () => {
             <div className="bg-starbucks-cream p-6 rounded-lg mb-8">
               <h2 className="font-semibold text-lg mb-3">Download Now</h2>
               <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <Button className="flex-1">
+                <Button className="flex-1" onClick={() => window.open("https://apps.apple.com/app/starbrew", "_blank")}>
                   <Download className="mr-2 h-4 w-4" />
                   App Store
                 </Button>
-                <Button className="flex-1">
+                <Button className="flex-1" onClick={() => window.open("https://play.google.com/store/apps/details?id=com.starbrew", "_blank")}>
                   <Download className="mr-2 h-4 w-4" />
                   Google Play
                 </Button>
@@ -95,9 +110,12 @@ const OrderApp = () => {
                         className="w-full px-3 py-2 border rounded-md"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
                       />
                     </div>
-                    <Button type="submit">Send Link</Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Sending..." : "Send Link"}
+                    </Button>
                   </div>
                   
                   <div className="text-center text-sm text-gray-500 my-2">OR</div>
@@ -110,9 +128,12 @@ const OrderApp = () => {
                         className="w-full px-3 py-2 border rounded-md"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
+                        disabled={isLoading}
                       />
                     </div>
-                    <Button type="submit">Text Me</Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Sending..." : "Text Me"}
+                    </Button>
                   </div>
                 </form>
               </div>
@@ -134,7 +155,7 @@ const OrderApp = () => {
             <div className="relative border-8 border-gray-800 rounded-[3rem] p-2 bg-gray-800 shadow-xl max-w-[300px] mx-auto">
               <div className="rounded-[2.5rem] overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1550399504-8953e1a6ac87?w=600&auto=format&fit=crop&q=80"
+                  src="https://media.istockphoto.com/id/499776696/photo/mobile-internet.jpg?s=612x612&w=0&k=20&c=AcKW0R9-s7m9bfoDFakejzbRLWHtyPZ_X0pj-Dynxw4="
                   alt="StarBrew mobile app"
                   className="w-full object-cover"
                 />
@@ -170,7 +191,12 @@ const OrderApp = () => {
                 Join StarBrew Rewards on the app to start earning Stars with every purchase. 
                 Redeem your Stars for free drinks, food, and more!
               </p>
-              <Button className="mb-4">Learn More About Rewards</Button>
+              <Button 
+                className="mb-4"
+                onClick={() => window.location.href = '/rewards'}
+              >
+                Learn More About Rewards
+              </Button>
               <p className="text-sm text-gray-600">
                 Already a member? Sign in on the app to see your Stars and Rewards.
               </p>
@@ -230,11 +256,11 @@ const OrderApp = () => {
               Having trouble with the app or have more questions? Our customer support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button className="flex-1">
+              <Button className="flex-1" onClick={() => window.location.href = '/contact'}>
                 <Phone className="mr-2 h-4 w-4" />
                 Contact Support
               </Button>
-              <Button variant="outline" className="flex-1">
+              <Button variant="outline" className="flex-1" onClick={() => window.location.href = '/faq'}>
                 View App Tutorials
               </Button>
             </div>

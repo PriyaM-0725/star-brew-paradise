@@ -1,73 +1,57 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Truck, MapPin, Package, ShoppingBag, Clock, CheckCircle } from "lucide-react";
-import { formatCurrency } from "@/utils/format";
+import { formatPrice } from "@/utils/format";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import {
+  DeliveryDetail,
+  DeliveryStatus,
+  getActiveDeliveries,
+  getPastDeliveries
+} from "@/services/delivery";
 
 const Delivery = () => {
   const [activeTab, setActiveTab] = useState("active");
+  const [activeDeliveries, setActiveDeliveries] = useState<DeliveryDetail[]>([]);
+  const [pastDeliveries, setPastDeliveries] = useState<DeliveryDetail[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { user } = useAuth();
   
-  // Sample delivery data
-  const activeDeliveries = [
-    {
-      id: "DEL-4567",
-      orderId: "ORD-12342",
-      status: "out-for-delivery",
-      estimatedDelivery: "Today, May 12, 2023 • 3:15 PM - 3:30 PM",
-      address: "1234 Pine Street, Apt 5B, San Francisco, CA 94109",
-      items: [
-        { name: "Tall Chai Tea Latte", quantity: 2, price: 4.25 },
-        { name: "Chocolate Croissant", quantity: 1, price: 3.50 }
-      ],
-      total: 12.00,
-      progress: 75,
-      carrier: "StarBrew Delivery",
-      trackingNumber: "SBD-78901234",
-      timeline: [
-        { status: "Order Placed", time: "2:25 PM", completed: true },
-        { status: "Order Confirmed", time: "2:26 PM", completed: true },
-        { status: "Preparation Started", time: "2:28 PM", completed: true },
-        { status: "Out for Delivery", time: "2:40 PM", completed: true, current: true },
-        { status: "Delivered", time: "Estimated 3:15 PM", completed: false }
-      ]
+  useEffect(() => {
+    const fetchDeliveries = async () => {
+      setIsLoading(true);
+      try {
+        // If we're on the active tab, fetch active deliveries
+        if (activeTab === "active") {
+          const active = await getActiveDeliveries();
+          setActiveDeliveries(active);
+        } 
+        // If we're on the past tab and don't have past deliveries yet, fetch them
+        else if (activeTab === "past" && pastDeliveries.length === 0) {
+          const { deliveries } = await getPastDeliveries();
+          setPastDeliveries(deliveries);
+        }
+      } catch (error) {
+        console.error("Error fetching deliveries:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    if (user) {
+      fetchDeliveries();
+    } else {
+      setIsLoading(false);
     }
-  ];
+  }, [activeTab, user, pastDeliveries.length]);
   
-  const pastDeliveries = [
-    {
-      id: "DEL-4566",
-      orderId: "ORD-12338",
-      status: "delivered",
-      deliveredTime: "May 8, 2023 at 8:20 AM",
-      address: "1234 Pine Street, Apt 5B, San Francisco, CA 94109",
-      items: [
-        { name: "Grande Americano", quantity: 1, price: 3.25 },
-        { name: "Egg White & Roasted Red Pepper Egg Bites", quantity: 1, price: 4.75 }
-      ],
-      total: 8.00,
-      carrier: "StarBrew Delivery",
-      trackingNumber: "SBD-78901230"
-    },
-    {
-      id: "DEL-4550",
-      orderId: "ORD-12330",
-      status: "delivered",
-      deliveredTime: "May 1, 2023 at 12:45 PM",
-      address: "1234 Pine Street, Apt 5B, San Francisco, CA 94109",
-      items: [
-        { name: "Iced Coffee", quantity: 2, price: 3.75 },
-        { name: "Turkey & Pesto Panini", quantity: 1, price: 6.95 }
-      ],
-      total: 14.45,
-      carrier: "StarBrew Delivery",
-      trackingNumber: "SBD-78901220"
-    }
-  ];
-  
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: DeliveryStatus) => {
     switch (status) {
       case "out-for-delivery":
         return <Badge className="bg-blue-100 text-blue-800">Out for Delivery</Badge>;
@@ -106,6 +90,34 @@ const Delivery = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-starbucks-green/20 border-t-starbucks-green rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600">Loading deliveries...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-md px-4">
+          <Package className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+          <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
+          <p className="text-gray-600 mb-6">
+            Please sign in to view your delivery tracking information.
+          </p>
+          <Button onClick={() => navigate("/login", { state: { from: "/delivery" }})}>
+            Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
@@ -139,7 +151,7 @@ const Delivery = () => {
                           <Button 
                             variant="outline" 
                             className="mt-2 sm:mt-0"
-                            onClick={() => window.location.href = `/order-detail/${delivery.orderId}`}
+                            onClick={() => navigate(`/order-detail/${delivery.orderId}`)}
                           >
                             View Order Details
                           </Button>
@@ -203,17 +215,17 @@ const Delivery = () => {
                           {delivery.items.map((item, idx) => (
                             <div key={idx} className="flex justify-between">
                               <div className="flex">
-                                <span className="font-medium mr-2">{item.quantity}x</span>
+                                <span className="font-medium mr-2">{item.quantity}×</span>
                                 <span>{item.name}</span>
                               </div>
-                              <span>{formatCurrency(item.price * item.quantity)}</span>
+                              <span>{formatPrice(item.price * item.quantity)}</span>
                             </div>
                           ))}
                         </div>
                         
                         <div className="border-t pt-3 flex justify-between font-bold">
                           <span>Total</span>
-                          <span>{formatCurrency(delivery.total)}</span>
+                          <span>{formatPrice(delivery.total)}</span>
                         </div>
                         
                         <div className="mt-4 pt-3 border-t text-sm text-gray-500">
@@ -230,7 +242,7 @@ const Delivery = () => {
                 <Truck className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium mb-2">No Active Deliveries</h3>
                 <p className="text-gray-500 mb-6">You don't have any orders out for delivery at the moment.</p>
-                <Button onClick={() => window.location.href = '/menu'}>Order Now</Button>
+                <Button onClick={() => navigate('/menu')}>Order Now</Button>
               </div>
             )}
           </TabsContent>
@@ -255,7 +267,7 @@ const Delivery = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => window.location.href = `/order-detail/${delivery.orderId}`}
+                            onClick={() => navigate(`/order-detail/${delivery.orderId}`)}
                           >
                             View Details
                           </Button>
@@ -272,7 +284,7 @@ const Delivery = () => {
                         </div>
                         <div className="mt-3 pt-3 border-t">
                           <p className="text-sm text-gray-500">
-                            {delivery.items.length} items • Total: {formatCurrency(delivery.total)}
+                            {delivery.items.length} items • Total: {formatPrice(delivery.total)}
                           </p>
                         </div>
                       </div>
@@ -285,7 +297,7 @@ const Delivery = () => {
                 <Package className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                 <h3 className="text-lg font-medium mb-2">No Delivery History</h3>
                 <p className="text-gray-500 mb-6">You haven't received any deliveries yet.</p>
-                <Button onClick={() => window.location.href = '/menu'}>Order Now</Button>
+                <Button onClick={() => navigate('/menu')}>Order Now</Button>
               </div>
             )}
           </TabsContent>

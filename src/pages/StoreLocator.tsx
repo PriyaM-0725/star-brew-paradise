@@ -1,294 +1,412 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckIcon, MapPin, Phone, Clock, Coffee, Search, Wifi, Car } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MapPin, Search, Clock, Coffee, Wifi, ChevronRight } from "lucide-react";
+import { Store, searchStores, StoreSearchParams } from "@/services/stores";
 
 const StoreLocator = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState({
-    wifi: false,
-    mobileOrder: false,
-    driveThru: false,
-    outdoorSeating: false
-  });
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchRadius, setSearchRadius] = useState(10);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{latitude: number; longitude: number} | null>(null);
+  const [activeTab, setActiveTab] = useState("list");
   
-  // Sample store data
-  const stores = [
-    {
-      id: 1,
-      name: "Downtown Cafe",
-      address: "123 Main Street, Downtown",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94105",
-      phone: "(415) 555-1234",
-      hours: "5:00 AM - 9:00 PM",
-      distance: "0.3 miles",
-      features: ["Mobile Order", "Drive-Thru", "Wifi"]
-    },
-    {
-      id: 2,
-      name: "Union Square",
-      address: "456 Market Street",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94103",
-      phone: "(415) 555-5678",
-      hours: "6:00 AM - 8:00 PM",
-      distance: "1.2 miles",
-      features: ["Mobile Order", "Wifi", "Outdoor Seating"]
-    },
-    {
-      id: 3,
-      name: "Financial District",
-      address: "789 Montgomery Street",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94111",
-      phone: "(415) 555-9012",
-      hours: "5:30 AM - 7:00 PM",
-      distance: "1.8 miles",
-      features: ["Mobile Order", "Wifi"]
-    },
-    {
-      id: 4,
-      name: "Marina Location",
-      address: "1234 Chestnut Street",
-      city: "San Francisco",
-      state: "CA",
-      zipCode: "94123",
-      phone: "(415) 555-3456",
-      hours: "6:00 AM - 8:30 PM",
-      distance: "2.5 miles",
-      features: ["Drive-Thru", "Mobile Order", "Wifi", "Outdoor Seating"]
-    }
+  const storeFeatures = [
+    "WiFi",
+    "Drive-Thru",
+    "Mobile Order",
+    "Outdoor Seating",
+    "Restroom",
+    "Parking",
+    "24 Hours",
+    "Rewards"
   ];
   
-  const featureOptions = [
-    {
-      id: "wifi",
-      label: "Wi-Fi",
-      icon: <Wifi className="h-4 w-4" />
-    },
-    {
-      id: "mobile-order",
-      label: "Mobile Order",
-      icon: <Phone className="h-4 w-4" />
-    },
-    {
-      id: "drive-thru",
-      label: "Drive-Thru",
-      icon: <Car className="h-4 w-4" />
-    },
-    {
-      id: "outdoor-seating",
-      label: "Outdoor Seating",
-      icon: <Coffee className="h-4 w-4" />
+  useEffect(() => {
+    // Try to get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          
+          // Search for nearby stores when location is available
+          searchNearbyStores(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          // Load some default stores when location is not available
+          searchWithParams({});
+        }
+      );
+    } else {
+      // Geolocation not supported, load default stores
+      searchWithParams({});
     }
-  ];
+  }, []);
   
-  const handleFilterChange = (id: string, checked: boolean) => {
-    setFilters(prev => ({
-      ...prev,
-      [id]: checked
-    }));
+  const searchNearbyStores = async (latitude: number, longitude: number) => {
+    setIsLoading(true);
+    try {
+      const searchParams: StoreSearchParams = {
+        latitude,
+        longitude,
+        radius: searchRadius,
+      };
+      
+      const { stores } = await searchStores(searchParams);
+      setStores(stores);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message || "Failed to load stores");
+      console.error("Error searching stores:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  // Filter stores based on search query and filters
-  const filteredStores = stores.filter(store => {
-    // Search filter
-    const matchesSearch = searchQuery 
-      ? store.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        store.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        store.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        store.zipCode.includes(searchQuery)
-      : true;
-    
-    // Feature filters
-    const matchesWifi = filters.wifi ? store.features.includes("Wifi") : true;
-    const matchesMobileOrder = filters.mobileOrder ? store.features.includes("Mobile Order") : true;
-    const matchesDriveThru = filters.driveThru ? store.features.includes("Drive-Thru") : true;
-    const matchesOutdoorSeating = filters.outdoorSeating ? store.features.includes("Outdoor Seating") : true;
-    
-    return matchesSearch && matchesWifi && matchesMobileOrder && matchesDriveThru && matchesOutdoorSeating;
-  });
-  
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Search logic is already handled by the filteredStores variable
-    console.log("Searching for:", searchQuery);
+    
+    const searchParams: StoreSearchParams = {
+      query: searchTerm,
+      features: selectedFeatures.length ? selectedFeatures : undefined
+    };
+    
+    if (searchLocation) {
+      // In a real app, you would geocode the location to get coordinates
+      // For now, we'll just pass the query
+      searchParams.query = searchLocation;
+    } else if (userLocation) {
+      searchParams.latitude = userLocation.latitude;
+      searchParams.longitude = userLocation.longitude;
+      searchParams.radius = searchRadius;
+    }
+    
+    searchWithParams(searchParams);
   };
   
+  const searchWithParams = async (params: StoreSearchParams) => {
+    setIsLoading(true);
+    try {
+      const { stores: fetchedStores } = await searchStores(params);
+      setStores(fetchedStores);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message || "Failed to search stores");
+      console.error("Error searching stores:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleFeatureChange = (feature: string) => {
+    setSelectedFeatures(prev => {
+      if (prev.includes(feature)) {
+        return prev.filter(f => f !== feature);
+      } else {
+        return [...prev, feature];
+      }
+    });
+  };
+  
+  const handleUseMyLocation = () => {
+    if (userLocation) {
+      setSearchLocation("");
+      searchNearbyStores(userLocation.latitude, userLocation.longitude);
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          setSearchLocation("");
+          searchNearbyStores(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+          alert("Unable to get your location. Please enter a location manually.");
+        }
+      );
+    } else {
+      alert("Location services are not supported in your browser.");
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold text-starbucks-green mb-4">Find a Store</h1>
-        <p className="text-lg text-gray-600 mb-8">
-          Locate your nearest StarBrew coffee shop and discover our amenities.
-        </p>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Search Stores</h2>
-                <div className="space-y-4">
-                  <form onSubmit={handleSearch}>
-                    <div className="relative mb-4">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                      <Input 
-                        type="text" 
-                        placeholder="City, state, or zip code" 
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="bg-starbucks-green text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Find a StarBrew Near You</h1>
+          <p className="text-lg max-w-xl mx-auto mb-8">
+            Locate your nearest StarBrew cafe and discover what each location has to offer.
+          </p>
+          
+          <form onSubmit={handleSearch} className="max-w-xl mx-auto">
+            <div className="flex flex-col md:flex-row gap-3 mb-4">
+              <div className="flex-grow">
+                <Input
+                  type="text"
+                  placeholder="Enter city, state or zip code"
+                  value={searchLocation}
+                  onChange={(e) => setSearchLocation(e.target.value)}
+                  className="bg-white"
+                  disabled={isLoading}
+                />
+              </div>
+              <Button type="submit" disabled={isLoading}>
+                <Search className="mr-2 h-4 w-4" />
+                Find Stores
+              </Button>
+            </div>
+            
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="bg-white/10 hover:bg-white/20 text-white border-white/30"
+              onClick={handleUseMyLocation}
+              disabled={isLoading}
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              Use My Current Location
+            </Button>
+          </form>
+        </div>
+      </section>
+
+      {/* Search Results */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">
+                {isLoading ? "Searching stores..." : `${stores.length} Stores Found`}
+              </h2>
+              
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="hidden md:block">
+                <TabsList>
+                  <TabsTrigger value="list">List View</TabsTrigger>
+                  <TabsTrigger value="map">Map View</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Filters */}
+              <div className="lg:w-1/4">
+                <Card className="sticky top-4">
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold text-lg mb-4">Filter Stores</h3>
+                    
+                    <div className="mb-6">
+                      <Label htmlFor="search-term" className="mb-2 block">Search</Label>
+                      <Input
+                        id="search-term"
+                        placeholder="Search by store name"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="mb-2"
                       />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => handleSearch({ preventDefault: () => {} } as any)}
+                        disabled={isLoading}
+                      >
+                        <Search className="mr-2 h-3 w-3" />
+                        Search
+                      </Button>
+                    </div>
+                    
+                    <div className="mb-6">
+                      <Label className="mb-2 block">Distance</Label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[5, 10, 15, 25].map((radius) => (
+                          <Button
+                            key={radius}
+                            type="button"
+                            variant={searchRadius === radius ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSearchRadius(radius)}
+                            disabled={isLoading}
+                          >
+                            {radius} mi
+                          </Button>
+                        ))}
+                      </div>
                     </div>
                     
                     <div>
-                      <Button type="submit" className="w-full">Search</Button>
+                      <Label className="mb-2 block">Store Features</Label>
+                      <div className="space-y-2">
+                        {storeFeatures.map((feature) => (
+                          <div key={feature} className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`feature-${feature}`}
+                              checked={selectedFeatures.includes(feature)}
+                              onCheckedChange={() => handleFeatureChange(feature)}
+                              disabled={isLoading}
+                            />
+                            <label 
+                              htmlFor={`feature-${feature}`}
+                              className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              {feature}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </form>
-                  
-                  <div className="pt-4 border-t">
-                    <h3 className="font-medium mb-3">Filter by Features</h3>
-                    <div className="space-y-3">
-                      {featureOptions.map(option => (
-                        <div key={option.id} className="flex items-center space-x-2">
-                          <Checkbox 
-                            id={option.id} 
-                            checked={filters[option.id as keyof typeof filters]}
-                            onCheckedChange={(checked) => handleFilterChange(option.id, checked as boolean)}
-                          />
-                          <label
-                            htmlFor={option.id}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2"
-                          >
-                            {option.icon}
-                            {option.label}
-                          </label>
-                        </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Results */}
+              <div className="lg:w-3/4">
+                <TabsContent value="list" className="mt-0">
+                  {error ? (
+                    <div className="bg-red-50 text-red-800 p-4 rounded-md mb-4">
+                      <p className="font-medium">Error loading stores</p>
+                      <p className="text-sm">{error}</p>
+                    </div>
+                  ) : isLoading ? (
+                    <div className="flex justify-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-starbucks-green"></div>
+                    </div>
+                  ) : stores.length > 0 ? (
+                    <div className="space-y-4">
+                      {stores.map((store) => (
+                        <Card 
+                          key={store.id} 
+                          className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                          onClick={() => navigate(`/store/${store.id}`)}
+                        >
+                          <CardContent className="p-0">
+                            <div className="flex flex-col md:flex-row">
+                              {store.image && (
+                                <div className="md:w-1/4 h-48 md:h-auto">
+                                  <img 
+                                    src={store.image} 
+                                    alt={store.name} 
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              )}
+                              <div className={`${store.image ? 'md:w-3/4' : 'w-full'} p-6`}>
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h3 className="font-bold text-lg mb-1">{store.name}</h3>
+                                    <p className="text-gray-500">
+                                      {store.address}, {store.city}, {store.state} {store.zipCode}
+                                    </p>
+                                    
+                                    <div className="flex items-center mt-2">
+                                      <Clock className="h-4 w-4 text-gray-500 mr-1" />
+                                      <span className="text-sm text-gray-500">
+                                        Opens {store.hours[0]?.open} • Closes {store.hours[0]?.close}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                                </div>
+                                
+                                <div className="mt-4">
+                                  <div className="flex flex-wrap gap-2">
+                                    {store.features.slice(0, 4).map((feature, idx) => (
+                                      <Badge 
+                                        key={idx} 
+                                        variant="outline" 
+                                        className="bg-gray-50"
+                                      >
+                                        {feature === "WiFi" && <Wifi className="h-3 w-3 mr-1" />}
+                                        {feature === "Drive-Thru" && <Coffee className="h-3 w-3 mr-1" />}
+                                        {feature}
+                                      </Badge>
+                                    ))}
+                                    {store.features.length > 4 && (
+                                      <Badge variant="outline" className="bg-gray-50">
+                                        +{store.features.length - 4} more
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="mt-4 flex gap-3">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                                        `${store.address}, ${store.city}, ${store.state} ${store.zipCode}`
+                                      )}`, '_blank');
+                                    }}
+                                  >
+                                    <MapPin className="h-4 w-4 mr-1" />
+                                    Directions
+                                  </Button>
+                                  <Button 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate('/order');
+                                    }}
+                                  >
+                                    <Coffee className="h-4 w-4 mr-1" />
+                                    Order
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <div className="mt-6 bg-starbucks-cream p-4 rounded-lg">
-              <h3 className="font-semibold mb-2 flex items-center">
-                <CheckIcon className="h-4 w-4 mr-2 text-starbucks-green" />
-                Pro Tip
-              </h3>
-              <p className="text-sm">
-                Use the StarBrew app to find stores along your route or instantly order ahead at your favorite location.
-              </p>
-              <div className="mt-4">
-                <Link to="/order">
-                  <Button variant="outline" size="sm" className="w-full">
-                    Get the App
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2">
-            <div className="bg-gray-100 rounded-lg h-[400px] mb-6 flex items-center justify-center">
-              <div className="text-center">
-                <img src="https://cdn.images.express.co.uk/img/dynamic/25/590x/secondary/google-maps-street-view-california-la-los-angeles-spelling-embarrassing-1820896.jpg?r=1554891355302" 
-                alt="Sample map preview" 
-                className="h-full object-cover rounded-lg" 
-                />
-              </div>
-            </div>
-            
-            <h2 className="text-xl font-semibold mb-4">
-              {filteredStores.length > 0 
-                ? `${filteredStores.length} Store${filteredStores.length !== 1 ? 's' : ''} Found`
-                : "No Stores Found"
-              }
-            </h2>
-            
-            <div className="space-y-4">
-              {filteredStores.length > 0 ? (
-                filteredStores.map(store => (
-                  <Card key={store.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                  ) : (
+                    <div className="text-center py-12 bg-white rounded-lg">
+                      <MapPin className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No Stores Found</h3>
+                      <p className="text-gray-500 mb-6">Try adjusting your filters or search criteria.</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="map" className="mt-0">
+                  <Card className="overflow-hidden">
                     <CardContent className="p-0">
-                      <div className="grid grid-cols-1 md:grid-cols-4">
-                        <div className="md:col-span-3 p-6">
-                          <Link to={`/store/${store.id}`} className="hover:text-starbucks-green">
-                            <h3 className="text-lg font-semibold">{store.name}</h3>
-                          </Link>
-                          <p className="text-sm text-gray-500">{store.distance} away</p>
-                          
-                          <div className="mt-4 space-y-2">
-                            <div className="flex items-start">
-                              <MapPin className="h-4 w-4 mr-2 mt-1 text-starbucks-green shrink-0" />
-                              <span className="text-sm">
-                                {store.address}, {store.city}, {store.state} {store.zipCode}
-                              </span>
-                            </div>
-                            <div className="flex items-center">
-                              <Phone className="h-4 w-4 mr-2 text-starbucks-green shrink-0" />
-                              <span className="text-sm">{store.phone}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <Clock className="h-4 w-4 mr-2 text-starbucks-green shrink-0" />
-                              <span className="text-sm">{store.hours}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2 mt-4">
-                            {store.features.map((feature, index) => (
-                              <span 
-                                key={index}
-                                className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-gray-100 text-gray-800"
-                              >
-                                {feature}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="md:col-span-1 flex flex-col justify-between border-t md:border-t-0 md:border-l p-4">
-                          <a 
-                            href={`https://maps.google.com/?q=${store.address},${store.city},${store.state}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button className="w-full mb-2">Directions</Button>
-                          </a>
-                          <Link to={`/store/${store.id}`}>
-                            <Button variant="outline" className="w-full">View Details</Button>
-                          </Link>
+                      <div className="h-[600px] bg-gray-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <MapPin className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                          <p className="text-gray-500">
+                            Map view will be available soon
+                          </p>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                ))
-              ) : (
-                <div className="text-center py-10 bg-gray-50 rounded-lg">
-                  <MapPin className="mx-auto h-10 w-10 text-gray-400 mb-2" />
-                  <h3 className="text-lg font-medium mb-2">No Stores Found</h3>
-                  <p className="text-gray-500 mb-4">
-                    Try adjusting your search criteria or filters.
-                  </p>
-                </div>
-              )}
-            </div>
-            
-            {filteredStores.length > 0 && (
-              <div className="mt-6 text-center">
-                <Button variant="outline">Load More Stores</Button>
+                </TabsContent>
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };
