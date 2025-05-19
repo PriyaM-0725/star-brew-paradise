@@ -1,11 +1,21 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Store, getStoreById } from "@/services/stores";
-import { ArrowLeft, MapPin, Clock, Phone, Coffee, Wifi, Parking, Star, ChevronRight, Heart } from "lucide-react";
+import { 
+  ArrowLeft, 
+  MapPin, 
+  Clock, 
+  Phone, 
+  Coffee, 
+  Wifi, 
+  SquareParking, 
+  Star, 
+  ChevronRight, 
+  Heart 
+} from "lucide-react";
 import { toast } from "sonner";
 
 const StoreDetail = () => {
@@ -256,7 +266,7 @@ const StoreDetail = () => {
               {store.features.map((feature, index) => (
                 <div key={index} className="flex items-center">
                   {feature.toLowerCase().includes("wifi") && <Wifi className="h-5 w-5 text-starbucks-green mr-2" />}
-                  {feature.toLowerCase().includes("parking") && <Parking className="h-5 w-5 text-starbucks-green mr-2" />}
+                  {feature.toLowerCase().includes("parking") && <SquareParking className="h-5 w-5 text-starbucks-green mr-2" />}
                   {feature.toLowerCase().includes("rewards") && <Star className="h-5 w-5 text-starbucks-green mr-2" />}
                   {!feature.toLowerCase().includes("wifi") && 
                    !feature.toLowerCase().includes("parking") && 
@@ -286,7 +296,7 @@ const StoreDetail = () => {
                   <div>
                     <h3 className="font-medium">StarBrew - {["Downtown", "University", "West Side"][index]}</h3>
                     <p className="text-sm text-gray-600">
-                      {0.2 * (index + 1).toFixed(1)} miles away • {index % 2 === 0 ? "Open" : "Closes at 9 PM"}
+                      {0.2 * (index + 1)} miles away • {index % 2 === 0 ? "Open" : "Closes at 9 PM"}
                     </p>
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
