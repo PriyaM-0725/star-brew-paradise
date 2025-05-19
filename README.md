@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
 
-## Project info
+# StarBrew Coffee App
 
-**URL**: https://lovable.dev/projects/87ea3e50-c03f-4dc6-8dbb-8b97892d7497
+A coffee shop application built with React, TypeScript, and Supabase.
 
-## How can I edit this code?
+## Features
+- Store locator with interactive map
+- User authentication
+- Favorite stores
+- Product catalog
+- Order history
+- Gift cards
 
-There are several ways of editing your application.
+## Setup
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/87ea3e50-c03f-4dc6-8dbb-8b97892d7497) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Frontend
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Create a `.env` file with the following variables:
 ```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+4. Run the development server with `npm run dev`
 
-**Edit a file directly in GitHub**
+### Backend (Supabase)
+1. Create a new Supabase project at https://supabase.com
+2. Go to the SQL editor in your Supabase dashboard
+3. Copy and paste the contents of `supabase-setup.sql` and run it
+4. This will create all necessary tables and some sample data
+5. Set up authentication in the Supabase dashboard under Authentication > Settings
+   - Enable Email/Password sign-in
+   - Configure any other auth providers you want to use
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Environment Variables
+- `VITE_SUPABASE_URL`: Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
 
-**Use GitHub Codespaces**
+## Database Structure
+The application uses the following tables in Supabase:
+- `stores`: Store locations and basic information
+- `store_hours`: Operating hours for each store
+- `store_features`: Features available at each store (WiFi, parking, etc.)
+- `users`: User profiles and reward points
+- `products`: Product catalog
+- `orders`: Order information
+- `order_items`: Items in each order
+- `user_favorites`: User's favorite stores
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Row Level Security
+All tables have Row Level Security (RLS) policies configured to ensure data security:
+- Public data (stores, products) can be read by anyone
+- User data can only be accessed by the user who owns it
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
+## Development
+This project uses:
+- React 18
 - TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Tailwind CSS for styling
+- shadcn/ui component library
+- Supabase for backend services
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/87ea3e50-c03f-4dc6-8dbb-8b97892d7497) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Deployment
+1. Build the production bundle with `npm run build`
+2. Deploy using your preferred hosting service
+3. Make sure to set the environment variables in your hosting platform

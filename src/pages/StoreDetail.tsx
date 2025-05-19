@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Store, getStoreById } from "@/services/stores";
+import { Store, getStoreById, addFavoriteStore, removeFavoriteStore, getFavoriteStores } from "@/services/stores";
 import { 
   ArrowLeft, 
   MapPin, 
@@ -17,6 +17,7 @@ import {
   Heart 
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 const StoreDetail = () => {
   const { storeId } = useParams<{ storeId: string }>();
@@ -25,6 +26,7 @@ const StoreDetail = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("info");
   const [isFavorite, setIsFavorite] = useState(false);
+  const { user } = useAuth();
   
   useEffect(() => {
     const fetchStoreDetails = async () => {
@@ -36,8 +38,10 @@ const StoreDetail = () => {
           setError(null);
           
           // Check if this store is in favorites
-          const favorites = JSON.parse(localStorage.getItem("favoriteStores") || "[]");
-          setIsFavorite(favorites.includes(storeId));
+          if (user) {
+            const favorites = await getFavoriteStores();
+            setIsFavorite(favorites.includes(storeId));
+          }
         }
       } catch (err: any) {
         setError(err.message || "Failed to load store details");
@@ -48,21 +52,27 @@ const StoreDetail = () => {
     };
     
     fetchStoreDetails();
-  }, [storeId]);
+  }, [storeId, user]);
   
-  const toggleFavorite = () => {
-    const favorites = JSON.parse(localStorage.getItem("favoriteStores") || "[]");
+  const toggleFavorite = async () => {
+    if (!user) {
+      toast("Please sign in to save favorites");
+      return;
+    }
     
-    if (isFavorite) {
-      const updatedFavorites = favorites.filter((id: string) => id !== storeId);
-      localStorage.setItem("favoriteStores", JSON.stringify(updatedFavorites));
-      setIsFavorite(false);
-      toast("Store removed from favorites");
-    } else {
-      favorites.push(storeId);
-      localStorage.setItem("favoriteStores", JSON.stringify(favorites));
-      setIsFavorite(true);
-      toast("Store added to favorites");
+    try {
+      if (isFavorite) {
+        await removeFavoriteStore(storeId!);
+        setIsFavorite(false);
+        toast("Store removed from favorites");
+      } else {
+        await addFavoriteStore(storeId!);
+        setIsFavorite(true);
+        toast("Store added to favorites");
+      }
+    } catch (error) {
+      console.error("Error updating favorites:", error);
+      toast.error("Failed to update favorites");
     }
   };
   
@@ -106,7 +116,7 @@ const StoreDetail = () => {
   }
   
   const getTodayHours = () => {
-    const todayHours = store.hours.find(h => h.day === today);
+    const todayHours = store?.hours.find(h => h.day === today);
     if (todayHours) {
       return `${todayHours.open} - ${todayHours.close}`;
     }
@@ -114,7 +124,7 @@ const StoreDetail = () => {
   };
   
   const isCurrentlyOpen = () => {
-    const todayHours = store.hours.find(h => h.day === today);
+    const todayHours = store?.hours.find(h => h.day === today);
     if (!todayHours) return false;
     
     const now = new Date();
